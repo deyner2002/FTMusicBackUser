@@ -1,0 +1,99 @@
+﻿using CORE.Loyal.Interfaces.Providers;
+using Core.Loyal.Models.FTMUSIC;
+using Support.Loyal.Util;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using CORE.Loyal.Interfaces.Services;
+using CORE.Loyal.Models.FTMUSIC;
+
+namespace CORE.Loyal.Services
+{
+    public class UsuarioServices: IUsuarioServices
+    {
+        private readonly IUsuarioProvider _provider;
+        public UsuarioServices(IUsuarioProvider provider)
+        {
+            _provider = provider;
+        }
+        public async Task<List<UsuarioModel>> GetList()
+        {
+            List<UsuarioModel> list = new List<UsuarioModel>();
+            try
+            {
+                list = await _provider.GetList();
+            }
+            catch (Exception ex)
+            {
+                Plugins.WriteExceptionLog(ex);
+            }
+            return list;
+        }
+
+        public async Task<long> SaveUser(UsuarioModel user)
+        {
+            long consecutivo = 0;
+            try
+            {
+                consecutivo = await _provider.SaveUser(user);
+
+            }
+            catch (Exception ex)
+            {
+                Plugins.WriteExceptionLog(ex);
+                return -1;
+            }
+            return consecutivo;
+        }
+
+        public async Task<Boolean> ExistsUserCorreo(string correo)
+        {
+            Boolean exists = true;
+            try
+            {
+                exists = await _provider.ExistsUserCorreo(correo);
+
+            }
+            catch (Exception ex)
+            {
+                Plugins.WriteExceptionLog(ex);
+                return true;
+            }
+            return exists;
+        }
+
+        public async Task<Boolean> ValidarContrasenia(string correo, string contrasenia)
+        {
+            Boolean exists = true;
+            try
+            {
+                exists = await _provider.ValidarContrasenia(correo,contrasenia);
+
+            }
+            catch (Exception ex)
+            {
+                Plugins.WriteExceptionLog(ex);
+                return true;
+            }
+            return exists;
+        }
+
+        public async Task<UsuarioModel> ConsultarUsuario(int Id)
+        {
+            UsuarioModel usuario = new UsuarioModel();
+            try
+            {
+                usuario = await _provider.ConsultarUsuario(Id);
+            }
+            catch (Exception ex)
+            {
+                Plugins.WriteExceptionLog(ex);
+            }
+            return usuario;
+        }
+
+
+    }
+}

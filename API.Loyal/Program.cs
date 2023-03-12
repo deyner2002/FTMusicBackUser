@@ -2,7 +2,9 @@ using Core.Loyal.Providers;
 using Core.Loyal.Services;
 using CORE.Loyal.Interfaces.Providers;
 using CORE.Loyal.Interfaces.Services;
+using CORE.Loyal.Services;
 using Support.Loyal.DTOs;
+using CORE.Loyal.Providers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,9 +21,11 @@ builder.Services.Configure<ConnectionStrings>(builder.Configuration.GetSection("
 
 
 builder.Services.AddScoped<IUserServices, UserServices>();
-
-
 builder.Services.AddScoped<IUserProvider, UserProvider>();
+
+
+builder.Services.AddScoped<IUsuarioServices, UsuarioServices>();
+builder.Services.AddScoped<IUsuarioProvider, UsuarioProvider>();
 
 
 builder.Services.AddSwaggerGen();
