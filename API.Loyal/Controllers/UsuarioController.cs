@@ -186,5 +186,60 @@ namespace API.Loyal.Controllers
             return response;
         }
 
+
+
+
+        [AllowAnonymous]
+        [HttpPost("Modificar usuario")]
+        public async Task<ResponseModels> ModificarUsuario(UsuarioModel user)
+        {
+            ResponseModels response = new ResponseModels();
+
+            try
+            {
+                response.Datos = _provider.ModificarUsuario(user).Result;
+                long codigoRespuesta = long.Parse(response.Datos.ToString());
+                if (codigoRespuesta == -2)
+                {
+                    response.IsError = true;
+                    response.Mensaje = "Error: hay campos nulos que son obligatorios";
+                }
+                else
+                {
+                    if (codigoRespuesta == -1)
+                    {
+                        response.IsError = true;
+                        response.Mensaje = "Error del sistema";
+                    }
+                    
+                    if(codigoRespuesta == 1)
+                    {
+                        response.IsError = false;
+                        response.Mensaje = "Registro Modificado";
+                    }
+
+                    if (codigoRespuesta == -3)
+                    {
+                        response.IsError = true;
+                        response.Mensaje = "El correo a modificar ya se encuentra en uso";
+                    }
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Plugins.WriteExceptionLog(ex);
+                response.IsError = true;
+                response.Mensaje = "Error del sistema";
+            }
+
+            return response;
+        }
+
+
+
+
+
     }
 }

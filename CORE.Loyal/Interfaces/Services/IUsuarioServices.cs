@@ -15,6 +15,9 @@ namespace CORE.Loyal.Interfaces.Services
         Task<Boolean> ValidarContrasenia(string correo, string contrasenia);
         Task<UsuarioModel> ConsultarUsuario(int Id);
 
+        Task<long> ModificarUsuario(UsuarioModel user);
+
+
 
     }
 }

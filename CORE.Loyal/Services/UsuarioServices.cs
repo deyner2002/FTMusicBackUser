@@ -95,5 +95,21 @@ namespace CORE.Loyal.Services
         }
 
 
+        public async Task<long> ModificarUsuario(UsuarioModel user)
+        {
+            long result = 0;
+            try
+            {
+                result = await _provider.ModificarUsuario(user);
+
+            }
+            catch (Exception ex)
+            {
+                Plugins.WriteExceptionLog(ex);
+                return -1;
+            }
+            return result;
+        }
+
     }
 }

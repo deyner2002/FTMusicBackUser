@@ -289,7 +289,81 @@ namespace CORE.Loyal.Providers
         }
 
 
+        public async Task<long> ModificarUsuario(UsuarioModel user)
+        {
 
+            long consecutivo = 0;
+            try
+            {
+                
+                if (user.Nombre != null && user.Contrasenia != null && user.Correo != null)
+                {
+                    await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.OpenAsync();
+
+
+                    cmd.CommandText = @"
+                                        select CORREO from DBFTMUSIC.USUARIOS WHERE CORREO=:P_CORREO
+                                        ";
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_CORREO", Value = user.Correo });
+                    await cmd.ExecuteNonQueryAsync();
+
+                    var adapter = new OracleDataAdapter(cmd);
+                    var data = new DataSet("Datos");
+                    adapter.Fill(data);
+
+                    
+
+                    if (data.Tables[0].Rows.Count == 0)
+                    {
+                        cmd.CommandText = @"
+                                        UPDATE DBFTMUSIC.USUARIOS SET
+                                        NOMBRE=:P_NOMBRE,
+                                        CORREO=:P_CORREO, 
+                                        CONTRASENIA=:P_CONTRASENIA,
+                                        DESCRIPCION=:P_DESCRIPCION,
+                                        FECHANACIMIENTO=:P_FECHANACIMIENTO,
+                                        FACEBOOK=:P_FACEBOOK,
+                                        INSTAGRAM=:P_INSTAGRAM,
+                                        YOUTUBE=:P_YOUTUBE
+                                        WHERE ID=:P_ID
+                                        ";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_NOMBRE", Value = user.Nombre });
+                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_CORREO", Value = user.Correo });
+                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_CONTRASENIA", Value = user.Contrasenia });
+                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_DESCRIPCION", Value = user.Descripcion });
+                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Date, Direction = ParameterDirection.Input, ParameterName = "P_FECHANACIMIENTO", Value = user.FechaNacimiento });
+                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_FACEBOOK", Value = user.Facebook });
+                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_INSTAGRAM", Value = user.Instagram });
+                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_YOUTUBE", Value = user.Youtube });
+                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_ID", Value = user.Id });
+                        await cmd.ExecuteNonQueryAsync();
+
+
+                    }
+                    else
+                    {
+                        await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.CloseAsync();
+                        return -3;
+                    }
+                    await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.CloseAsync();
+
+
+                    return 1;
+                }
+                else
+                {
+                    return -2;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Plugins.WriteExceptionLog(ex);
+                return -1;
+            }
+        }
 
     }
 }
