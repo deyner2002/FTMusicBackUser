@@ -10,7 +10,7 @@ using System.Timers;
 namespace API.Loyal.Controllers
 {
 
-    [Authorize]
+    
     [ApiController]
     [Route("api/[controller]")]
     public class UsuarioController:ControllerBase
@@ -25,7 +25,7 @@ namespace API.Loyal.Controllers
         }
 
 
-        [AllowAnonymous]
+        
         [HttpGet("ConsultarUsuarios")]
         public async Task<ResponseModels> GetList()
         {
@@ -57,7 +57,7 @@ namespace API.Loyal.Controllers
         }
         
         
-        [AllowAnonymous]
+        
         [HttpPost("Registrar usuario")]
         public async Task<ResponseModels> Save(UsuarioModel user)
         {
@@ -98,7 +98,7 @@ namespace API.Loyal.Controllers
         }
 
         
-        [AllowAnonymous]
+        
         [HttpPost("ValidarExistenciaCorreo")]
         public async Task<ResponseModels> ExistsUsuarioCorreo(string correo)
         {
@@ -126,7 +126,7 @@ namespace API.Loyal.Controllers
             
         }
 
-        [AllowAnonymous]
+        
         [HttpPost("ValidarContrasenia")]
         public async Task<ResponseModels> ValidarContrasenia(string correo, string contrasenia)
         {
@@ -155,7 +155,7 @@ namespace API.Loyal.Controllers
 
 
 
-        [AllowAnonymous]
+        
         [HttpGet("ConsultarUsuario")]
         public async Task<ResponseModels> ConsultarUsuario(int Id)
         {
@@ -189,7 +189,7 @@ namespace API.Loyal.Controllers
 
 
 
-        [AllowAnonymous]
+        
         [HttpPost("Modificar usuario")]
         public async Task<ResponseModels> ModificarUsuario(UsuarioModel user)
         {
