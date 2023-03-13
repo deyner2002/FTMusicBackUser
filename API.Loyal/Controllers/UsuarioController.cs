@@ -127,17 +127,15 @@ namespace API.Loyal.Controllers
         }
 
         
-        [HttpPost("ValidarContrasenia")]
-        public async Task<ResponseModels> ValidarContrasenia(string correo, string contrasenia)
+        [HttpPost("ConsultarUsuarioPorCorreoYContrasenia")]
+        public async Task<ResponseModels> ConsultarUsuario(string correo, string contrasenia)
         {
-            Boolean exists = true;
             ResponseModels response = new ResponseModels();
             try
             {
-                response.Datos = _provider.ValidarContrasenia(correo, contrasenia).Result;
-                exists = Boolean.Parse(response.Datos.ToString());
-                response.Mensaje = "Contrasenia o usuario incorrecto";
-                if (exists == true)
+                response.Datos = _provider.ConsultarUsuario(correo, contrasenia).Result;
+                response.Mensaje = "Login Correcto";
+                if (response.Datos == null)
                 {
                     response.Mensaje = "Contrasenia correcta";
                 }
@@ -156,7 +154,7 @@ namespace API.Loyal.Controllers
 
 
         
-        [HttpGet("ConsultarUsuario")]
+        [HttpGet("ConsultarUsuarioPorId")]
         public async Task<ResponseModels> ConsultarUsuario(int Id)
         {
             ResponseModels response = new ResponseModels();

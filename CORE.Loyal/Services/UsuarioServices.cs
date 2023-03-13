@@ -64,20 +64,18 @@ namespace CORE.Loyal.Services
             return exists;
         }
 
-        public async Task<Boolean> ValidarContrasenia(string correo, string contrasenia)
+        public async Task<UsuarioModel> ValidarContrasenia(string correo, string contrasenia)
         {
-            Boolean exists = true;
+            UsuarioModel usuario = new UsuarioModel();
             try
             {
-                exists = await _provider.ValidarContrasenia(correo,contrasenia);
-
+                usuario = await _provider.ConsultarUsuario(correo,contrasenia);
             }
             catch (Exception ex)
             {
                 Plugins.WriteExceptionLog(ex);
-                return true;
             }
-            return exists;
+            return usuario;
         }
 
         public async Task<UsuarioModel> ConsultarUsuario(int Id)

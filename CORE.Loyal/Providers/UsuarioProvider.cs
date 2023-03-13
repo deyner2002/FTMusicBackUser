@@ -186,14 +186,14 @@ namespace CORE.Loyal.Providers
         }
 
 
-        public async Task<Boolean> ValidarContrasenia(string correo,string contrasenia)
+        public async Task<UsuarioModel> Consultarusuario(string correo,string contrasenia)
         {
-            var _outs = new List<string>();
+            var _outs = new List<UsuarioModel>();
             try
             {
                 await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.OpenAsync();
 
-                cmd.CommandText = "SELECT CORREO FROM DBFTMUSIC.USUARIOS  WHERE CORREO=:P_CORREO AND CONTRASENIA=:P_CONTRASENIA";
+                cmd.CommandText = "SELECT ID, NOMBRE, CORREO, FECHAREGISTRO,DESCRIPCION,FACEBOOK,INSTAGRAM,YOUTUBE,FECHANACIMIENTO FROM DBFTMUSIC.USUARIOS WHERE CORREO=:P_CORRREO AND CONTRASENIA=:P_CONTRASENIA";
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_CORREO", Value = correo });
                 cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_CONTRASENIA", Value = contrasenia });
@@ -209,30 +209,28 @@ namespace CORE.Loyal.Providers
                 {
                     foreach (DataRow item in data.Tables[0].Rows)
                     {
-
-                        _outs.Add(!Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[0]) ? Convert.ToString(item.ItemArray[0]) : "");
-                    }
-                    if (_outs[0].Equals(correo))
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
+                        UsuarioModel usuarioModel = new UsuarioModel
+                        {
+                            Id = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[0]) ? Convert.ToInt64(item.ItemArray[0]) : 0,
+                            Nombre = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[1]) ? Convert.ToString(item.ItemArray[1]) : "SIN NOMBRE",
+                            Correo = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[2]) ? Convert.ToString(item.ItemArray[2]) : "SIN CORREO",
+                            FechaRegistro = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[3]) ? Convert.ToDateTime(item.ItemArray[3]) : null,
+                            Descripcion = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[4]) ? Convert.ToString(item.ItemArray[4]) : "SIN DESCRIPCION",
+                            Facebook = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[5]) ? Convert.ToString(item.ItemArray[5]) : "SIN FACEBOOK",
+                            Instagram = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[6]) ? Convert.ToString(item.ItemArray[6]) : "SIN INSTAGRAM",
+                            Youtube = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[7]) ? Convert.ToString(item.ItemArray[7]) : "SIN YOUTUBE",
+                            FechaNacimiento = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[8]) ? Convert.ToDateTime(item.ItemArray[8]) : null
+                        };
+                        _outs.Add(usuarioModel);
                     }
                 }
-                else
-                {
-                    return false;
-                }
-
-
+                return _outs[0];
             }
             catch (Exception ex)
             {
                 Plugins.WriteExceptionLog(ex);
-                return true;
             }
+            return null;
         }
 
 
