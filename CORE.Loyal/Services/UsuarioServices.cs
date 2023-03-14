@@ -64,7 +64,7 @@ namespace CORE.Loyal.Services
             return exists;
         }
 
-        public async Task<UsuarioModel> ValidarContrasenia(string correo, string contrasenia)
+        public async Task<UsuarioModel> ConsultarUsuario(string correo, string contrasenia)
         {
             UsuarioModel usuario = new UsuarioModel();
             try
