@@ -137,7 +137,7 @@ namespace API.Loyal.Controllers
                 response.Mensaje = "Login Correcto";
                 if (response.Datos == null)
                 {
-                    response.Mensaje = "Contrasenia correcta";
+                    response.Mensaje = "Contrasenia o usuario incorrectos";
                 }
 
 

@@ -186,7 +186,7 @@ namespace CORE.Loyal.Providers
         }
 
 
-        public async Task<UsuarioModel> Consultarusuario(string correo,string contrasenia)
+        public async Task<UsuarioModel> ConsultarUsuario(string correo,string contrasenia)
         {
             var _outs = new List<UsuarioModel>();
             try
