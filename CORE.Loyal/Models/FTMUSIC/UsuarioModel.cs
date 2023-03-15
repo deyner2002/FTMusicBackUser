@@ -13,6 +13,7 @@ namespace CORE.Loyal.Models.FTMUSIC
 
         [Required(ErrorMessage = "El Nombre del usuario es requerido")]
         public string? Nombre { get; set; }
+        public string? NombreArtistico { get; set;}
         [Required(ErrorMessage = "El Correo del usuario es requerido")]
         //[RegularExpression(@"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$", ErrorMessage = "El correo no es valido")]
         public string? Correo { get; set; }
@@ -25,6 +26,7 @@ namespace CORE.Loyal.Models.FTMUSIC
         public string? Facebook { get; set; }
         public string? Instagram { get; set; }
         public string? Youtube { get; set; }
+        public string? Estado { get; set; }
     }
 
 

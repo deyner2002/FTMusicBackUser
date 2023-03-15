@@ -121,8 +121,6 @@ namespace API.Loyal.Controllers
                 {
                     response.Mensaje = "Contrasenia o usuario incorrectos";
                 }
-
-
             }
             catch (Exception ex)
             {
