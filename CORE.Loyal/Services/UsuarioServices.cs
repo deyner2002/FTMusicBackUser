@@ -48,21 +48,6 @@ namespace CORE.Loyal.Services
             return consecutivo;
         }
 
-        public async Task<Boolean> ExistsUserCorreo(string correo)
-        {
-            Boolean exists = true;
-            try
-            {
-                exists = await _provider.ExistsUserCorreo(correo);
-
-            }
-            catch (Exception ex)
-            {
-                Plugins.WriteExceptionLog(ex);
-                return true;
-            }
-            return exists;
-        }
 
         public async Task<UsuarioModel> ConsultarUsuario(string correo, string contrasenia)
         {

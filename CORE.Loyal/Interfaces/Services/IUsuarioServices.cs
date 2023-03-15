@@ -11,7 +11,6 @@ namespace CORE.Loyal.Interfaces.Services
     {
         Task<List<UsuarioModel>> GetList();
         Task<long> SaveUser(UsuarioModel user);
-        Task<Boolean> ExistsUserCorreo(string correo);
         Task<UsuarioModel> ConsultarUsuario(string correo, string contrasenia);
         Task<UsuarioModel> ConsultarUsuario(int Id);
 

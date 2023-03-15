@@ -81,8 +81,16 @@ namespace API.Loyal.Controllers
                     }
                     else
                     {
-                        response.IsError = false;
-                        response.Mensaje = "Registro Guardado";
+                        if (codigoRespuesta==0)
+                        {
+                            response.IsError = true;
+                            response.Mensaje = "El correo ya se encuentra en uso";
+                        }
+                        else {
+                            response.IsError = false;
+                            response.Mensaje = "Registro Guardado";
+
+                        }
                     }
                 }
 
@@ -98,33 +106,7 @@ namespace API.Loyal.Controllers
         }
 
         
-        
-        [HttpPost("ValidarExistenciaCorreo")]
-        public async Task<ResponseModels> ExistsUsuarioCorreo(string correo)
-        {
-            Boolean exists = true;
-            ResponseModels response = new ResponseModels();
-            try
-            {
-                response.Datos=_provider.ExistsUserCorreo(correo).Result;
-                exists= Boolean.Parse(response.Datos.ToString());
-                response.Mensaje = "El usuario no existe";
-                if (exists==true)
-                {
-                    response.Mensaje = "El usuario ya existe";
-                }
-               
-
-            }
-            catch (Exception ex)
-            {
-                Plugins.WriteExceptionLog(ex);
-                response.IsError = true;
-                response.Mensaje = "No se pudo validar el usuario";
-            }
-            return response;
-            
-        }
+      
 
         
         [HttpPost("ConsultarUsuarioPorCorreoYContrasenia")]

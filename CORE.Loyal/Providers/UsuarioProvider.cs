@@ -81,48 +81,74 @@ namespace CORE.Loyal.Providers
             long consecutivo = 0;
             try
             {
-                string fechaNacimiento = user.FechaNacimiento.Value.Day + "-" + user.FechaNacimiento.Value.Month +"-"+ user.FechaNacimiento.Value.Year;
+                
                 if (user.Nombre != null && user.Contrasenia != null && user.Correo != null )
                 {
+
+
+
                     await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.OpenAsync();
+
+
                     cmd.CommandText = @"
-                                        INSERT INTO DBFTMUSIC.USUARIOS
-                                        (ID, NOMBRE, CORREO, CONTRASENIA,DESCRIPCION,FECHAREGISTRO,FECHANACIMIENTO,FACEBOOK,INSTAGRAM,YOUTUBE)
-                                        VALUES(DBFTMUSIC.SEQUENCIAUSUARIO.NEXTVAL, :P_NOMBRE, :P_CORREO, :P_CONTRASENIA, :P_DESCRIPCION, CURRENT_DATE,:P_FECHANACIMIENTO,:P_FACEBOOK,:P_INSTAGRAM,:P_YOUTUBE)
+                                        select CORREO from DBFTMUSIC.USUARIOS WHERE CORREO=:P_CORREO
                                         ";
                     cmd.Parameters.Clear();
-                    cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_NOMBRE", Value = user.Nombre });
                     cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_CORREO", Value = user.Correo });
-                    cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_CONTRASENIA", Value = user.Contrasenia });
-                    cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_DESCRIPCION", Value = user.Descripcion });
-                    cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Date, Direction = ParameterDirection.Input, ParameterName = "P_FECHANACIMIENTO", Value = user.FechaNacimiento });
-                    cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_FACEBOOK", Value = user.Facebook });
-                    cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_INSTAGRAM", Value = user.Instagram });
-                    cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_YOUTUBE", Value = user.Youtube });
-                    
-
-                    await cmd.ExecuteNonQueryAsync();
-
-                    cmd.CommandText = @"
-                                        select DBFTMUSIC.SEQUENCIAUSUARIO.currval from dual
-                                        ";
                     await cmd.ExecuteNonQueryAsync();
 
                     var adapter = new OracleDataAdapter(cmd);
                     var data = new DataSet("Datos");
                     adapter.Fill(data);
 
-                    await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.CloseAsync();
 
-                    if (data.Tables[0].Rows.Count > 0)
+                    if (data.Tables[0].Rows.Count == 0)
                     {
-                        foreach (DataRow item in data.Tables[0].Rows)
+
+                        cmd.CommandText = @"
+                                        INSERT INTO DBFTMUSIC.USUARIOS
+                                        (ID, NOMBRE, CORREO, CONTRASENIA,DESCRIPCION,FECHAREGISTRO,FECHANACIMIENTO,FACEBOOK,INSTAGRAM,YOUTUBE)
+                                        VALUES(DBFTMUSIC.SEQUENCIAUSUARIO.NEXTVAL, :P_NOMBRE, :P_CORREO, :P_CONTRASENIA, :P_DESCRIPCION, CURRENT_DATE,:P_FECHANACIMIENTO,:P_FACEBOOK,:P_INSTAGRAM,:P_YOUTUBE)
+                                        ";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_NOMBRE", Value = user.Nombre });
+                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_CORREO", Value = user.Correo });
+                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_CONTRASENIA", Value = user.Contrasenia });
+                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_DESCRIPCION", Value = user.Descripcion });
+                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Date, Direction = ParameterDirection.Input, ParameterName = "P_FECHANACIMIENTO", Value = user.FechaNacimiento });
+                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_FACEBOOK", Value = user.Facebook });
+                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_INSTAGRAM", Value = user.Instagram });
+                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_YOUTUBE", Value = user.Youtube });
+
+
+                        await cmd.ExecuteNonQueryAsync();
+
+                        cmd.CommandText = @"
+                                        select DBFTMUSIC.SEQUENCIAUSUARIO.currval from dual
+                                        ";
+                        await cmd.ExecuteNonQueryAsync();
+
+                        adapter = new OracleDataAdapter(cmd);
+                        data = new DataSet("Datos");
+                        adapter.Fill(data);
+
+                        await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.CloseAsync();
+
+                        if (data.Tables[0].Rows.Count > 0)
                         {
-                            consecutivo = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[0]) ? Convert.ToInt64(item.ItemArray[0]) : 0;
+                            foreach (DataRow item in data.Tables[0].Rows)
+                            {
+                                consecutivo = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[0]) ? Convert.ToInt64(item.ItemArray[0]) : 0;
+                            }
                         }
+                        return consecutivo;
+
+                    }
+                    else
+                    {
+                        return 0;
                     }
 
-                    return consecutivo;
                 }
                 else
                 {
@@ -137,55 +163,6 @@ namespace CORE.Loyal.Providers
             }
         }
         
-        public async Task<Boolean> ExistsUserCorreo(string correo)
-        {
-            var _outs = new List<string>();
-            try
-            {
-                await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.OpenAsync();
-
-                cmd.CommandText = "SELECT CORREO FROM DBFTMUSIC.USUARIOS  WHERE CORREO=:P_CORREO";
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_CORREO", Value = correo });
-                await cmd.ExecuteNonQueryAsync();
-
-                var adapter = new OracleDataAdapter(cmd);
-                var data = new DataSet("Datos");
-                adapter.Fill(data);
-
-                await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.CloseAsync();
-
-                if (data.Tables[0].Rows.Count > 0)
-                {
-                    foreach (DataRow item in data.Tables[0].Rows)
-                    {
-                        
-                        _outs.Add(!Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[0]) ? Convert.ToString(item.ItemArray[0]) : "");
-                    }
-                    if (_outs[0].Equals(correo))
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    return false;
-                }
-
-                
-            }
-            catch (Exception ex)
-            {
-                Plugins.WriteExceptionLog(ex);
-                return true;
-            }
-        }
-
-
         public async Task<UsuarioModel> ConsultarUsuario(string correo,string contrasenia)
         {
             var _outs = new List<UsuarioModel>();
