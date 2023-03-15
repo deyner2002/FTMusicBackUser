@@ -58,7 +58,7 @@ namespace API.Loyal.Controllers
         
         
         
-        [HttpPost("Registrar usuario")]
+        [HttpPost("RegistrarUsuario")]
         public async Task<ResponseModels> Save(UsuarioModel user)
         {
             ResponseModels response = new ResponseModels();
@@ -188,7 +188,7 @@ namespace API.Loyal.Controllers
 
 
         
-        [HttpPost("Modificar usuario")]
+        [HttpPost("ModificarUsuario")]
         public async Task<ResponseModels> ModificarUsuario(UsuarioModel user)
         {
             ResponseModels response = new ResponseModels();
