@@ -196,12 +196,6 @@ namespace API.Loyal.Controllers
                         response.Mensaje = "Registro Modificado";
                     }
 
-                    if (codigoRespuesta == -3)
-                    {
-                        response.IsError = true;
-                        response.Mensaje = "El correo a modificar ya se encuentra en uso";
-                    }
-
                 }
 
             }
@@ -216,7 +210,36 @@ namespace API.Loyal.Controllers
         }
 
 
+        [HttpPost("DesactivarUsuario")]
+        public async Task<ResponseModels> DesactivarUsuario(int id)
+        {
+            ResponseModels response = new ResponseModels();
 
+            try
+            {
+                response.Datos = _provider.DesactivarUsuario(id).Result;
+                long codigoRespuesta = long.Parse(response.Datos.ToString());
+                if (codigoRespuesta == 1)
+                {
+                    response.IsError = false;
+                    response.Mensaje = "Usuario Desactivado";
+                }
+                else
+                {
+                        response.IsError = true;
+                        response.Mensaje = "Error del sistema";
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Plugins.WriteExceptionLog(ex);
+                response.IsError = true;
+                response.Mensaje = "Error del sistema";
+            }
+
+            return response;
+        }
 
 
     }

@@ -171,7 +171,7 @@ namespace CORE.Loyal.Providers
             {
                 await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.OpenAsync();
 
-                cmd.CommandText = "SELECT ID, NOMBRE, NOMBREARTISTICO, CORREO, FECHAREGISTRO,DESCRIPCION,FACEBOOK,INSTAGRAM,YOUTUBE,FECHANACIMIENTO FROM DBFTMUSIC.USUARIOS WHERE CORREO=:P_CORRREO AND CONTRASENIA=:P_CONTRASENIA AND ESTADO='A'";
+                cmd.CommandText = "SELECT ID, NOMBRE, NOMBREARTISTICO, CORREO, FECHAREGISTRO,DESCRIPCION,FACEBOOK,INSTAGRAM,YOUTUBE,FECHANACIMIENTO,CONTRASENIA FROM DBFTMUSIC.USUARIOS WHERE CORREO=:P_CORRREO AND CONTRASENIA=:P_CONTRASENIA AND ESTADO='A'";
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_CORREO", Value = correo });
                 cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_CONTRASENIA", Value = contrasenia });
@@ -198,7 +198,9 @@ namespace CORE.Loyal.Providers
                             Facebook = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[6]) ? Convert.ToString(item.ItemArray[6]) : "SIN FACEBOOK",
                             Instagram = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[7]) ? Convert.ToString(item.ItemArray[7]) : "SIN INSTAGRAM",
                             Youtube = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[8]) ? Convert.ToString(item.ItemArray[8]) : "SIN YOUTUBE",
-                            FechaNacimiento = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[9]) ? Convert.ToDateTime(item.ItemArray[9]) : null
+                            FechaNacimiento = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[9]) ? Convert.ToDateTime(item.ItemArray[9]) : null,
+                            Contrasenia = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[10]) ? Convert.ToString(item.ItemArray[10]) : "SIN CONTRASENIA"
+
                         };
                         _outs.Add(usuarioModel);
                     }
@@ -223,7 +225,7 @@ namespace CORE.Loyal.Providers
             {
                 await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.OpenAsync();
 
-                cmd.CommandText = "SELECT ID, NOMBRE,NOMBREARTISTICO, CORREO, FECHAREGISTRO,DESCRIPCION,FACEBOOK,INSTAGRAM,YOUTUBE,FECHANACIMIENTO FROM DBFTMUSIC.USUARIOS WHERE ID=:P_ID AND ESTADO='A'";
+                cmd.CommandText = "SELECT ID, NOMBRE,NOMBREARTISTICO, CORREO, FECHAREGISTRO,DESCRIPCION,FACEBOOK,INSTAGRAM,YOUTUBE,FECHANACIMIENTO,CONTRASENIA FROM DBFTMUSIC.USUARIOS WHERE ID=:P_ID AND ESTADO='A'";
                 cmd.Parameters.Clear();
                 cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_ID", Value = Id });
                 await cmd.ExecuteNonQueryAsync();
@@ -249,7 +251,8 @@ namespace CORE.Loyal.Providers
                             Facebook = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[6]) ? Convert.ToString(item.ItemArray[6]) : "SIN FACEBOOK",
                             Instagram = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[7]) ? Convert.ToString(item.ItemArray[7]) : "SIN INSTAGRAM",
                             Youtube = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[8]) ? Convert.ToString(item.ItemArray[8]) : "SIN YOUTUBE",
-                            FechaNacimiento = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[9]) ? Convert.ToDateTime(item.ItemArray[9]) : null
+                            FechaNacimiento = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[9]) ? Convert.ToDateTime(item.ItemArray[9]) : null,
+                            Contrasenia = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[10]) ? Convert.ToString(item.ItemArray[10]) : "SIN CONTRASENIA"
                         };
 
 
@@ -278,26 +281,12 @@ namespace CORE.Loyal.Providers
                 {
                     await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.OpenAsync();
 
-
-                    cmd.CommandText = @"
-                                        select CORREO from DBFTMUSIC.USUARIOS WHERE CORREO=:P_CORREO AND ESTADO='A'
-                                        ";
-                    cmd.Parameters.Clear();
-                    cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_CORREO", Value = user.Correo });
-                    await cmd.ExecuteNonQueryAsync();
-
-                    var adapter = new OracleDataAdapter(cmd);
-                    var data = new DataSet("Datos");
-                    adapter.Fill(data);
-
                     
 
-                    if (data.Tables[0].Rows.Count == 0)
-                    {
+                    
                         cmd.CommandText = @"
-                                        UPDATE DBFTMUSIC.USUARIOS SET
-                                        NOMBRE=:P_NOMBRE,
-                                        NOMBREARTISTICO=:P_NOMBREARTISTICO
+                                        UPDATE DBFTMUSIC.USUARIOS SET NOMBRE=:P_NOMBRE,
+                                        NOMBREARTISTICO=:P_NOMBREARTISTICO,
                                         CORREO=:P_CORREO, 
                                         CONTRASENIA=:P_CONTRASENIA,
                                         DESCRIPCION=:P_DESCRIPCION,
@@ -305,7 +294,7 @@ namespace CORE.Loyal.Providers
                                         FACEBOOK=:P_FACEBOOK,
                                         INSTAGRAM=:P_INSTAGRAM,
                                         YOUTUBE=:P_YOUTUBE
-                                        WHERE ID=:P_ID
+                                        WHERE ID = :P_ID
                                         ";
                         cmd.Parameters.Clear();
                         cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_NOMBRE", Value = user.Nombre });
@@ -317,16 +306,11 @@ namespace CORE.Loyal.Providers
                         cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_FACEBOOK", Value = user.Facebook });
                         cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_INSTAGRAM", Value = user.Instagram });
                         cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_YOUTUBE", Value = user.Youtube });
-                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_ID", Value = user.Id });
+                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2 , Direction = ParameterDirection.Input, ParameterName = "P_ID", Value = user.Id });
                         await cmd.ExecuteNonQueryAsync();
 
 
-                    }
-                    else
-                    {
-                        await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.CloseAsync();
-                        return -3;
-                    }
+                    
                     await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.CloseAsync();
 
 
@@ -344,6 +328,38 @@ namespace CORE.Loyal.Providers
                 return -1;
             }
         }
+
+
+
+
+
+        public async Task<long> DesactivarUsuario(int id)
+        {
+
+            long consecutivo = 0;
+            try
+            {
+                    await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.OpenAsync();
+                        cmd.CommandText = @"
+                                        UPDATE DBFTMUSIC.USUARIOS SET
+                                        ESTADO='I'
+                                        WHERE ID=:P_ID
+                                        ";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_ID", Value = id });
+                        await cmd.ExecuteNonQueryAsync();
+                    await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.CloseAsync();
+
+                    return 1;
+            }
+            catch (Exception ex)
+            {
+                Plugins.WriteExceptionLog(ex);
+                return -1;
+            }
+        }
+
+
 
     }
 }

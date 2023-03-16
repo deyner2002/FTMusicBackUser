@@ -16,6 +16,8 @@ namespace CORE.Loyal.Interfaces.Services
 
         Task<long> ModificarUsuario(UsuarioModel user);
 
+        Task<long> DesactivarUsuario(int id);
+
 
 
     }

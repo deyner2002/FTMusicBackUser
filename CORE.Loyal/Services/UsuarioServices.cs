@@ -94,5 +94,21 @@ namespace CORE.Loyal.Services
             return result;
         }
 
+        public async Task<long> DesactivarUsuario(int id)
+        {
+            long result = -1;
+            try
+            {
+                result = await _provider.DesactivarUsuario(id);
+
+            }
+            catch (Exception ex)
+            {
+                Plugins.WriteExceptionLog(ex);
+                return -1;
+            }
+            return result;
+        }
+
     }
 }
