@@ -281,9 +281,22 @@ namespace CORE.Loyal.Providers
                 {
                     await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.OpenAsync();
 
-                    
+                    cmd.CommandText = @"
+                                        select CORREO from DBFTMUSIC.USUARIOS WHERE CORREO=:P_CORREO AND ESTADO='A'
+                                        ";
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_CORREO", Value = user.Correo });
+                    await cmd.ExecuteNonQueryAsync();
 
-                    
+                    var adapter = new OracleDataAdapter(cmd);
+                    var data = new DataSet("Datos");
+                    adapter.Fill(data);
+
+
+
+                    if (data.Tables[0].Rows.Count == 0)
+                    {
+
                         cmd.CommandText = @"
                                         UPDATE DBFTMUSIC.USUARIOS SET NOMBRE=:P_NOMBRE,
                                         NOMBREARTISTICO=:P_NOMBREARTISTICO,
@@ -306,8 +319,16 @@ namespace CORE.Loyal.Providers
                         cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_FACEBOOK", Value = user.Facebook });
                         cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_INSTAGRAM", Value = user.Instagram });
                         cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_YOUTUBE", Value = user.Youtube });
-                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2 , Direction = ParameterDirection.Input, ParameterName = "P_ID", Value = user.Id });
+                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_ID", Value = user.Id });
                         await cmd.ExecuteNonQueryAsync();
+                        await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.CloseAsync();
+
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+
 
 
                     

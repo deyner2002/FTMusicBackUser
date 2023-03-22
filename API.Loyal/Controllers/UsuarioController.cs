@@ -195,6 +195,11 @@ namespace API.Loyal.Controllers
                         response.IsError = false;
                         response.Mensaje = "Registro Modificado";
                     }
+                    if (codigoRespuesta == 0)
+                    {
+                        response.IsError = true;
+                        response.Mensaje = "El Correo que desea modificar ya se encuentra en uso";
+                    }
 
                 }
 
