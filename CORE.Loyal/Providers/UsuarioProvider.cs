@@ -307,7 +307,7 @@ namespace CORE.Loyal.Providers
                                         FACEBOOK=:P_FACEBOOK,
                                         INSTAGRAM=:P_INSTAGRAM,
                                         YOUTUBE=:P_YOUTUBE
-                                        WHERE ID = :P_ID
+                                        WHERE ID = :P_ID AND ESTADO ='A'
                                         ";
                         cmd.Parameters.Clear();
                         cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Varchar2, Direction = ParameterDirection.Input, ParameterName = "P_NOMBRE", Value = user.Nombre });
