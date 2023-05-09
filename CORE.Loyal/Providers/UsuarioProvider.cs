@@ -453,5 +453,51 @@ namespace CORE.Loyal.Providers
         }
 
 
+        public async Task<List<SuscripcionModel>> ConsultarSuscripcionesUsuario(int idSeguidor)
+        {
+            var _outs = new List<SuscripcionModel>();
+            try
+            {
+                await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.OpenAsync();
+
+                cmd.CommandText = "SELECT ID, ID_CANTANTE, ID_SEGUIDOR FROM DBFTMUSIC.SUSCRIPCIONES WHERE ID_SEGUIDOR=:P_IDSEGUIDOR";
+                cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Long, Direction = ParameterDirection.Input, ParameterName = "P_ID_SEGUIDORP", Value = idSeguidor });
+                await cmd.ExecuteNonQueryAsync();
+
+                var adapter = new OracleDataAdapter(cmd);
+                var data = new DataSet("Datos");
+                adapter.Fill(data);
+
+                await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.CloseAsync();
+
+                if (data.Tables[0].Rows.Count > 0)
+                {
+                    foreach (DataRow item in data.Tables[0].Rows)
+                    {
+                        SuscripcionModel suscripcionModel = new SuscripcionModel
+                        {
+                            Id = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[0]) ? Convert.ToInt64(item.ItemArray[0]) : 0,
+                            IdCantante = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[1]) ? Convert.ToInt64(item.ItemArray[1]) : 0,
+                            IdSeguidor = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[2]) ? Convert.ToInt64(item.ItemArray[2]) : 0
+                        };
+
+
+                        _outs.Add(suscripcionModel);
+                    }
+                }
+                else
+                {
+                    _outs = null;
+                }
+
+                return _outs;
+            }
+            catch (Exception ex)
+            {
+                Plugins.WriteExceptionLog(ex);
+            }
+            return null;
+        }
+
     }
 }

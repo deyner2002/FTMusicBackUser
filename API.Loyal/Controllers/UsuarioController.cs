@@ -296,5 +296,38 @@ namespace API.Loyal.Controllers
             return response;
         }
 
+
+        [HttpGet("ConsultarSuscripcionesUsuario")]
+        public async Task<ResponseModels> ConsultarSuscripcionesUsuario(int idSeguidor)
+        {
+            ResponseModels response = new ResponseModels();
+
+            try
+            {
+                response.Datos = _provider.ConsultarSuscripcionesUsuario(idSeguidor).Result;
+                if (response.Datos != null)
+                {
+                    response.IsError = false;
+                    response.Mensaje = "Ok";
+                }
+                else
+                {
+                    response.IsError = true;
+                    response.Mensaje = "No se pudieron obtener datos";
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Plugins.WriteExceptionLog(ex);
+                response.IsError = true;
+                response.Mensaje = "Error en obtener datos";
+            }
+
+            return response;
+        }
+
+
+
     }
 }

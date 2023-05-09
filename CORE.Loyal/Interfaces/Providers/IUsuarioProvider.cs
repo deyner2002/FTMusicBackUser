@@ -19,6 +19,6 @@ namespace CORE.Loyal.Interfaces.Providers
 
         Task<long> DesactivarUsuario(int id);
         Task<long> GuardarSuscripcion(SuscripcionModel suscripcionModel);
-
+        Task<List<SuscripcionModel>> ConsultarSuscripcionesUsuario(int idSeguidor);
     }
 }

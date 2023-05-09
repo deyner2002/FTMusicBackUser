@@ -126,7 +126,19 @@ namespace CORE.Loyal.Services
             return consecutivo;
         }
 
-
+        public async Task<List<SuscripcionModel>> ConsultarSuscripcionesUsuario(int idSeguidor)
+        {
+            List<SuscripcionModel> list = new List<SuscripcionModel>();
+            try
+            {
+                list = await _provider.ConsultarSuscripcionesUsuario(idSeguidor);
+            }
+            catch (Exception ex)
+            {
+                Plugins.WriteExceptionLog(ex);
+            }
+            return list;
+        }
 
     }
 }
