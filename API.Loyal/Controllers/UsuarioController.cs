@@ -248,5 +248,53 @@ namespace API.Loyal.Controllers
         }
 
 
+        [HttpPost("GuardarSuscripcion")]
+        public async Task<ResponseModels> GuardarSuscripcion(SuscripcionModel suscripcionModel)
+        {
+            ResponseModels response = new ResponseModels();
+
+            try
+            {
+                response.Datos = _provider.GuardarSuscripcion(suscripcionModel).Result;
+                long codigoRespuesta = long.Parse(response.Datos.ToString());
+                if (codigoRespuesta == -3)
+                {
+                    response.IsError = true;
+                    response.Mensaje = "Error: hay campos nulos que son obligatorios";
+                }
+                else
+                {
+                    if (codigoRespuesta == -1)
+                    {
+                        response.IsError = true;
+                        response.Mensaje = "Error del sistema";
+                    }
+                    else
+                    {
+                        if (codigoRespuesta == -2)
+                        {
+                            response.IsError = true;
+                            response.Mensaje = "El usuario ya se encuentra suscrito a este cantante";
+                        }
+                        else
+                        {
+                            response.IsError = false;
+                            response.Mensaje = "suscripcion Guardada";
+
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Plugins.WriteExceptionLog(ex);
+                response.IsError = true;
+                response.Mensaje = "Error del sistema";
+            }
+
+            return response;
+        }
+
     }
 }

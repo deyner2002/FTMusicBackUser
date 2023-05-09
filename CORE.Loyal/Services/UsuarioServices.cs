@@ -110,5 +110,23 @@ namespace CORE.Loyal.Services
             return result;
         }
 
+        public async Task<long> GuardarSuscripcion(SuscripcionModel suscripcionModel)
+        {
+            long consecutivo = 0;
+            try
+            {
+                consecutivo = await _provider.GuardarSuscripcion(suscripcionModel);
+
+            }
+            catch (Exception ex)
+            {
+                Plugins.WriteExceptionLog(ex);
+                return -1;
+            }
+            return consecutivo;
+        }
+
+
+
     }
 }

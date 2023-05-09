@@ -382,5 +382,76 @@ namespace CORE.Loyal.Providers
 
 
 
+
+        public async Task<long> GuardarSuscripcion(SuscripcionModel suscripcionModel)
+        {   long consecutivo = 0;
+            try
+            {
+                if (suscripcionModel.IdCantante!=null && suscripcionModel.IdSeguidor!=null)
+                {
+                    await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.OpenAsync();
+
+                    cmd.CommandText = @"
+                                        SELECT ID,ID_CANTANTE,ID_SEGUIDOR FROM DBFTMUSIC.SUSCRIPCIONES WHERE ID_CANTANTE=:P_ID_CANTANTEP AND ID_SEGUIDOR=:P_ID_SEGUIDORP
+                                   ";
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Long, Direction = ParameterDirection.Input, ParameterName = "P_ID_CANTANTEP", Value = suscripcionModel.IdCantante });
+                    cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Long, Direction = ParameterDirection.Input, ParameterName = "P_ID_SEGUIDORP", Value = suscripcionModel.IdSeguidor });
+                    await cmd.ExecuteNonQueryAsync();
+
+                    var adapter = new OracleDataAdapter(cmd);
+                    var data = new DataSet("Datos");
+                    adapter.Fill(data);
+                    if (data.Tables[0].Rows.Count == 0)
+                    {
+                        cmd.CommandText = @"
+                                        INSERT INTO DBFTMUSIC.SUSCRIPCIONES(ID,ID_CANTANTE,ID_SEGUIDOR)
+                                        VALUES(DBFTMUSIC.SEQUENCESUSCRIPCIONES.NEXTVAL,:P_ID_CANTANTE ,:P_ID_SEGUIDOR )
+                                           ";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Long, Direction = ParameterDirection.Input, ParameterName = "P_ID_CANTANTE", Value = suscripcionModel.IdCantante });
+                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Long, Direction = ParameterDirection.Input, ParameterName = "P_ID_SEGUIDOR", Value = suscripcionModel.IdSeguidor });
+                        await cmd.ExecuteNonQueryAsync();
+
+                        cmd.CommandText = @"
+                                        select DBFTMUSIC.SEQUENCESUSCRIPCIONES.currval from dual
+                                        ";
+                        await cmd.ExecuteNonQueryAsync();
+
+                        adapter = new OracleDataAdapter(cmd);
+                        data = new DataSet("Datos");
+                        adapter.Fill(data);
+
+                        
+
+                        if (data.Tables[0].Rows.Count > 0)
+                        {
+                            foreach (DataRow item in data.Tables[0].Rows)
+                            {
+                                consecutivo = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[0]) ? Convert.ToInt64(item.ItemArray[0]) : 0;
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        consecutivo = -2;   //ya se encuentra suscrito
+                    }
+                }
+                else
+                {
+                    consecutivo = -3;    //campos vacios
+                }
+            }
+            catch (Exception ex)
+            {
+                Plugins.WriteExceptionLog(ex);
+                consecutivo = -1;
+            }
+            await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.CloseAsync();
+            return consecutivo;
+        }
+
+
     }
 }
