@@ -327,7 +327,53 @@ namespace API.Loyal.Controllers
             return response;
         }
 
+        [HttpPost("EliminarSuscripcion")]
+        public async Task<ResponseModels> EliminarSuscripcion(SuscripcionModel suscripcionModel)
+        {
+            ResponseModels response = new ResponseModels();
 
+            try
+            {
+                response.Datos = _provider.EliminarSuscripcion(suscripcionModel).Result;
+                long codigoRespuesta = long.Parse(response.Datos.ToString());
+                if (codigoRespuesta == -3)
+                {
+                    response.IsError = true;
+                    response.Mensaje = "Error: hay campos nulos que son obligatorios";
+                }
+                else
+                {
+                    if (codigoRespuesta == -1)
+                    {
+                        response.IsError = true;
+                        response.Mensaje = "Error del sistema";
+                    }
+                    else
+                    {
+                        if (codigoRespuesta == -2)
+                        {
+                            response.IsError = true;
+                            response.Mensaje = "El usuario no se encuentra suscrito a este cantante";
+                        }
+                        else
+                        {
+                            response.IsError = false;
+                            response.Mensaje = "suscripcion Eliminada";
+
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Plugins.WriteExceptionLog(ex);
+                response.IsError = true;
+                response.Mensaje = "Error del sistema";
+            }
+
+            return response;
+        }
 
     }
 }

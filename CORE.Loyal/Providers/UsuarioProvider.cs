@@ -499,5 +499,81 @@ namespace CORE.Loyal.Providers
             return null;
         }
 
+
+
+
+
+        public async Task<long> EliminarSuscripcion(SuscripcionModel suscripcionModel)
+        {
+            long consecutivo = 0;
+            try
+            {
+                if (suscripcionModel.IdCantante != null && suscripcionModel.IdSeguidor != null)
+                {
+                    await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.OpenAsync();
+
+                    cmd.CommandText = @"
+                                        SELECT ID,ID_CANTANTE,ID_SEGUIDOR FROM DBFTMUSIC.SUSCRIPCIONES WHERE ID_CANTANTE=:P_ID_CANTANTEP AND ID_SEGUIDOR=:P_ID_SEGUIDORP
+                                   ";
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Long, Direction = ParameterDirection.Input, ParameterName = "P_ID_CANTANTEP", Value = suscripcionModel.IdCantante });
+                    cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Long, Direction = ParameterDirection.Input, ParameterName = "P_ID_SEGUIDORP", Value = suscripcionModel.IdSeguidor });
+                    await cmd.ExecuteNonQueryAsync();
+
+                    var adapter = new OracleDataAdapter(cmd);
+                    var data = new DataSet("Datos");
+                    adapter.Fill(data);
+                    if (data.Tables[0].Rows.Count > 0)
+                    {
+                        cmd.CommandText = @"
+                                        DELETE FROM DBFTMUSIC.SUSCRIPCIONES WHERE ID_CANTANTE=:P_ID_CANTANTE AND ID_SEGUIDOR=:P_ID_SEGUIDOR
+                                           ";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Long, Direction = ParameterDirection.Input, ParameterName = "P_ID_CANTANTE", Value = suscripcionModel.IdCantante });
+                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Long, Direction = ParameterDirection.Input, ParameterName = "P_ID_SEGUIDOR", Value = suscripcionModel.IdSeguidor });
+                        await cmd.ExecuteNonQueryAsync();
+
+                        cmd.CommandText = @"
+                                        SELECT * FROM DBFTMUSIC.SUSCRIPCIONES WHERE ID_CANTANTE=:P_ID_CANTANTE AND ID_SEGUIDOR=:P_ID_SEGUIDOR
+                                        ";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Long, Direction = ParameterDirection.Input, ParameterName = "P_ID_CANTANTE", Value = suscripcionModel.IdCantante });
+                        cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Long, Direction = ParameterDirection.Input, ParameterName = "P_ID_SEGUIDOR", Value = suscripcionModel.IdSeguidor });
+                        await cmd.ExecuteNonQueryAsync();
+
+                        adapter = new OracleDataAdapter(cmd);
+                        data = new DataSet("Datos");
+                        adapter.Fill(data);
+
+
+
+                        if (data.Tables[0].Rows.Count == 0)
+                        {
+                            consecutivo = 1;
+                        }
+
+                    }
+                    else
+                    {
+                        consecutivo = -2;   //no se encuentra suscrito
+                    }
+                }
+                else
+                {
+                    consecutivo = -3;    //campos vacios
+                }
+            }
+            catch (Exception ex)
+            {
+                Plugins.WriteExceptionLog(ex);
+                consecutivo = -1;
+            }
+            await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.CloseAsync();
+            return consecutivo;
+        }
+
+
+
+
     }
 }

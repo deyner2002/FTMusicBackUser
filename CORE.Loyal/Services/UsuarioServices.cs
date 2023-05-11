@@ -140,5 +140,23 @@ namespace CORE.Loyal.Services
             return list;
         }
 
+
+        public async Task<long> EliminarSuscripcion(SuscripcionModel suscripcionModel)
+        {
+            long consecutivo = 0;
+            try
+            {
+                consecutivo = await _provider.EliminarSuscripcion(suscripcionModel);
+
+            }
+            catch (Exception ex)
+            {
+                Plugins.WriteExceptionLog(ex);
+                return -1;
+            }
+            return consecutivo;
+        }
+
+
     }
 }
