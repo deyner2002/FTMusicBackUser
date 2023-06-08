@@ -375,5 +375,112 @@ namespace API.Loyal.Controllers
             return response;
         }
 
+
+
+
+        [HttpPost]
+        [Route("ConsultarNumeroSeguidoresPorUsuario")]
+        public async Task<ResponseModels> ConsultarNumeroSeguidoresPorUsuario(int idUsuario)
+        {
+            ResponseModels response = new ResponseModels();
+            int intentosRestantes = 3;
+            while (intentosRestantes > 0)
+            {
+                try
+                {
+                    response.Datos = _provider.ConsultarNumeroSeguidoresPorUsuario(idUsuario).Result;
+                    long codigoRespuesta = long.Parse(response.Datos.ToString());
+                    if (codigoRespuesta == -2)
+                    {
+                        intentosRestantes = 0;
+                        response.IsError = true;
+                        response.Mensaje = "Error del sistema";
+                    }
+
+                    if (codigoRespuesta == -1)
+                    {
+                        intentosRestantes = 0;
+                        response.IsError = true;
+                        response.Mensaje = "El cantante en cuestion no tiene Seguidores";
+                    }
+
+                    if (codigoRespuesta >= 0)
+                    {
+                        intentosRestantes = 0;
+                        response.IsError = false;
+                        response.Mensaje = "El numero de Seguidores es de: " + codigoRespuesta;
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    intentosRestantes--;
+                    Plugins.WriteExceptionLog(ex);
+                    response.IsError = true;
+                    response.Mensaje = "Error del sistema";
+                }
+            }
+            return response;
+        }
+
+
+
+        [HttpPost]
+        [Route("ValidarSuscripcionSeguidor")]
+        public async Task<ResponseModels> ValidarSuscripcionSeguidor(int idCantante, int idSeguidor)
+        {
+            ResponseModels response = new ResponseModels();
+            int intentosRestantes = 3;
+            while (intentosRestantes > 0)
+            {
+                try
+                {
+                    response.Datos = _provider.ValidarSuscripcionSeguidor( idCantante,  idSeguidor).Result;
+                    long codigoRespuesta = long.Parse(response.Datos.ToString());
+                    if (codigoRespuesta == 1)
+                    {
+                        response.IsError = false;
+                        response.Mensaje = "El usuario no se encuentra suscrito a este cantante";
+                        intentosRestantes = 0;
+                    }
+                    else
+                    {
+
+                        if (codigoRespuesta == 2)
+                        {
+                            response.IsError = false;
+                            response.Mensaje = "El usuario se encuentra suscrito a este cantante";
+                            intentosRestantes = 0;
+                        }
+                        if (codigoRespuesta == -2)
+                        {
+                            response.IsError = true;
+                            response.Mensaje = "campos obligatorios se encuentran vacios";
+                            intentosRestantes = 0;
+                        }
+                        if (codigoRespuesta == -1)
+                        {
+                            intentosRestantes--;
+                            response.IsError = true;
+                            response.Mensaje = "Error";
+                            await Task.Delay(1000);
+                        }
+                    }
+
+
+                }
+                catch (Exception ex)
+                {
+                    intentosRestantes--;
+                    Plugins.WriteExceptionLog(ex);
+                    response.IsError = true;
+                    response.Mensaje = "Error en obtener datos";
+                    await Task.Delay(1000);
+                }
+            }
+            return response;
+        }
+
+
     }
 }

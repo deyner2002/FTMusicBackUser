@@ -575,5 +575,93 @@ namespace CORE.Loyal.Providers
 
 
 
+
+        public async Task<long> ConsultarNumeroSeguidoresPorUsuario(int idUsuario)
+        {
+            long resultado = 0;
+            try
+            {
+                await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.OpenAsync();
+
+                cmd.CommandText = "SELECT COUNT(*) FROM DBFTMUSIC.SUSCRIPCIONES WHERE ID_CANTANTE=:P_ID_CANTANTE";
+                cmd.Parameters.Clear();
+                cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Long, Direction = ParameterDirection.Input, ParameterName = "P_IDCANCION", Value = idUsuario });
+                await cmd.ExecuteNonQueryAsync();
+
+                var adapter = new OracleDataAdapter(cmd);
+                var data = new DataSet("Datos");
+                adapter.Fill(data);
+
+                await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.CloseAsync();
+
+                if (data.Tables[0].Rows.Count > 0)
+                {
+                    foreach (DataRow item in data.Tables[0].Rows)
+                    {
+                        resultado = !Object.ReferenceEquals(System.DBNull.Value, item.ItemArray[0]) ? Convert.ToInt64(item.ItemArray[0]) : 0;
+                    }
+                }
+                else
+                {
+                    resultado = -1;
+                }
+            }
+            catch (Exception ex)
+            {
+                await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.CloseAsync();
+                resultado = -2;
+                Plugins.WriteExceptionLog(ex);
+            }
+            await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.CloseAsync();
+            return resultado;
+        }
+
+
+
+
+
+        public async Task<long> ValidarSuscripcionSeguidor(int idCantante, int idSeguidor)
+        {
+            long consecutivo = 0;
+            try
+            {
+                if (idCantante != null || idSeguidor != null)
+                {
+                    cmd.CommandText = @"
+                                        SELECT * FROM DBFTMUSIC.SUSCRIPCIONES WHERE ID_CANTANTE=:P_ID_CANTANTE AND ID_SEGUIDOR=:P_ID_SEGUIDOR
+                                        ";
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Long, Direction = ParameterDirection.Input, ParameterName = "P_ID_CANTANTE", Value = idCantante });
+                    cmd.Parameters.Add(new OracleParameter { OracleDbType = OracleDbType.Long, Direction = ParameterDirection.Input, ParameterName = "P_ID_SEGUIDOR", Value = idSeguidor });
+                    var adapter = new OracleDataAdapter(cmd);
+                    var data = new DataSet("Datos");
+                    adapter.Fill(data);
+                    if (data.Tables[0].Rows.Count == 0)
+                    {
+                        consecutivo = 1;//no se encuentra Suscrito
+                    }
+                    else
+                    {
+                        consecutivo = 2;//se encuentra Suscrito
+                    }
+                    await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.CloseAsync();
+                    return consecutivo;
+                }
+                else
+                {
+                    return -2;//campos vacios
+                }
+
+            }
+            catch (Exception ex)
+            {
+                await OracleDBConnectionSingleton.OracleDBConnection.oracleConnection.CloseAsync();
+                Plugins.WriteExceptionLog(ex);
+                return -1;//error
+            }
+        }
+
+
+
     }
 }

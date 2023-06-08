@@ -158,5 +158,41 @@ namespace CORE.Loyal.Services
         }
 
 
+        public async Task<long> ConsultarNumeroSeguidoresPorUsuario(int idUsuario)
+        {
+            long resultado = 0;
+            try
+            {
+                resultado = await _provider.ConsultarNumeroSeguidoresPorUsuario(idUsuario);
+
+            }
+            catch (Exception ex)
+            {
+                Plugins.WriteExceptionLog(ex);
+                return -1;
+            }
+            return resultado;
+        }
+
+
+
+
+
+        public async Task<long> ValidarSuscripcionSeguidor(int idCantante, int idSeguidor)
+        {
+            long salida = -1;
+            try
+            {
+                salida = await _provider.ValidarSuscripcionSeguidor(idCantante, idSeguidor);
+            }
+            catch (Exception ex)
+            {
+                Plugins.WriteExceptionLog(ex);
+            }
+            return salida;
+        }
+
+
+
     }
 }

@@ -21,5 +21,7 @@ namespace CORE.Loyal.Interfaces.Services
         Task<long> GuardarSuscripcion(SuscripcionModel suscripcionModel);
         Task<List<SuscripcionModel>> ConsultarSuscripcionesUsuario(int idSeguidor);
         Task<long> EliminarSuscripcion(SuscripcionModel suscripcionModel);
+        Task<long> ConsultarNumeroSeguidoresPorUsuario(int idUsuario);
+        Task<long> ValidarSuscripcionSeguidor(int idCantante, int idSeguidor);
     }
 }
