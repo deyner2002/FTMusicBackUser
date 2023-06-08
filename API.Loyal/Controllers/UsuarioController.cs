@@ -466,8 +466,6 @@ namespace API.Loyal.Controllers
                             await Task.Delay(1000);
                         }
                     }
-
-
                 }
                 catch (Exception ex)
                 {
